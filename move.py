@@ -19,7 +19,7 @@ class PieceMove(Move):
         self.v = v
 
     def launch(self):
-        pass
+        return self.board.move_piece(self.h, self.v)
 
 
 class HorizontalWallMove(Move):
@@ -29,7 +29,7 @@ class HorizontalWallMove(Move):
         self.v = v
 
     def launch(self):
-        pass
+        return self.board.put_horizontal_wall(self.h, self.v)
 
 
 class VerticalWallMove(Move):
@@ -39,4 +39,4 @@ class VerticalWallMove(Move):
         self.v = v
 
     def launch(self):
-        pass
+        return self.board.put_vertical_wall(self.h, self.v)
