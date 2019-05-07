@@ -1,3 +1,4 @@
 class Player:
-    def __init__(self, gm=None):
-        self.gm = gm
+    def __init__(self, board, analyzer):
+        self.board = board
+        self.analyzer = analyzer
