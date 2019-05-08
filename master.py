@@ -4,6 +4,7 @@ class Master:
         self.players = players
 
     def start(self):
+        self.board.show()
         for player in self.players:
             player.register_board(self.board)
         while True:
