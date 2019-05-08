@@ -34,8 +34,8 @@ class Board:
         dir = [[-1, 0], [0, -1], [0, 1], [1, 0]]
         for d in dir:
             h, v = from_h + d[1], from_v + d[0]
-            is_regal_h = h >= 0 and h + d[1] < self.size
-            is_regal_v = v + d[0] >= 0 and v + d[0] < self.size
+            is_regal_h = h >= 0 and h < self.size
+            is_regal_v = v >= 0 and v < self.size
             if is_regal_h and is_regal_v:
                 if d[0] == 0:
                     ditch = self.ditch.vertical

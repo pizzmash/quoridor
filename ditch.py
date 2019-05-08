@@ -23,16 +23,18 @@ class Ditch:
 
     def fill_horizontal(self, h, v):
         if self.is_fillable_horizontal(h, v):
-            self.horizontal[v][h] = self.FILLED
-            self.horizontal[v][h+1] = self.FILLED
+            self.horizontal[v][h] = self.STATE.FILLED
+            self.horizontal[v][h+1] = self.STATE.FILLED
+            self.xpt[v][h] = self.STATE.FILLED
             return True
         else:
             return False
 
     def fill_vertical(self, h, v):
         if self.is_fillable_vertical(h, v):
-            self.vertical[v][h] = self.FILLED
-            self.vertical[v+1][h] = self.FILLED
+            self.vertical[v][h] = self.STATE.FILLED
+            self.vertical[v+1][h] = self.STATE.FILLED
+            self.xpt[v][h] = self.STATE.FILLED
             return True
         else:
             return False
