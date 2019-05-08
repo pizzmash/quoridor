@@ -80,3 +80,35 @@ class Board:
             return True
         else:
             return False
+
+    def show(self):
+        print('+', end='')
+        for h in range(self.size):
+            print('+-', end='')
+        print('')
+        for v in range(self.size):
+            print('|', end='')
+            for h in range(self.size):
+                if [v, h] == self.pieces[self.ORDER.FIRST_HAND]:
+                    print('A', end='')
+                elif [v, h] == self.pieces[self.ORDER.SECOND_HAND]:
+                    print('B', end='')
+                if h < self.size - 1:
+                    if self.ditch.vertical[v][h] == self.ditch.STATE.EMPTY:
+                        print(' ', end='')
+                    else:
+                        print('|', end='')
+                else:
+                    print('|', end='')
+            print('')
+            print('+', end='')
+            for h in range(self.size):
+                print('+', end='')
+                if v < self.size - 1:
+                    if self.ditch.horizontal[v][h] == self.ditch.STATE.EMPTY:
+                        print(' ', end='')
+                    else:
+                        print('-', end='')
+                else:
+                    print('-', end='')
+            print('')

@@ -2,3 +2,9 @@ class Master:
     def __init__(self, board, players):
         self.board = board
         self.players = players
+
+    def start(self):
+        while True:
+            for player in self.players:
+                player.think()
+                self.board.show()
