@@ -4,6 +4,8 @@ class Master:
         self.players = players
 
     def start(self):
+        for player in self.players:
+            player.register_board(self.board)
         while True:
             for player in self.players:
                 player.think()

@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class Player(metaclass=ABCMeta):
-    def __init__(self, board):
+    def register_board(self, board):
         self.board = board
 
     @abstractmethod
