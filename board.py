@@ -43,7 +43,7 @@ class Board:
             return False
 
     def put_horizontal_wall(self, h, v):
-        if self.ditch.fill_horizontal(h, v):
+        if self.walls[self.order] > 0 and self.ditch.fill_horizontal(h, v):
             self.walls[self.order] -= 1
             self.turn()
             return True
@@ -51,7 +51,7 @@ class Board:
             return False
 
     def put_vertical_wall(self, h, v):
-        if self.ditch.fill_vertical(h, v):
+        if self.walls[self.order] > 0 and self.ditch.fill_vertical(h, v):
             self.walls[self.order] -= 1
             self.turn()
             return True
