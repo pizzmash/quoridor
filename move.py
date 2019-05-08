@@ -8,7 +8,7 @@ class Move(metaclass=ABCMeta):
         self.player = player
 
     @abstractmethod
-    def launch():
+    def launch(self):
         raise NotImplementedError
 
 
