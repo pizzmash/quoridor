@@ -1,3 +1,4 @@
 class Master:
-    def __init__(self, players):
+    def __init__(self, board, players):
+        self.board = board
         self.players = players
