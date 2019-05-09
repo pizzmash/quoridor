@@ -3,12 +3,12 @@ from move import PieceMove, HorizontalWallMove, VerticalWallMove
 
 
 class Human(Player):
-    def think(self):
+    def think(self, board):
         print('1: 動く\n2: 横の壁\n3: 縦の壁')
         mode = int(input())
         if mode == 1:
             print('どこに？')
-            print(self.board.movable_mass())
+            print(board.movable_mass())
             v, h = [int(i) for i in input().split()]
             move = PieceMove(h, v)
         elif mode == 2:
@@ -19,4 +19,4 @@ class Human(Player):
             print('どこに？')
             v, h = [int(i) for i in input().split()]
             move = VerticalWallMove(h, v)
-        move.launch(self.board)
+        return move

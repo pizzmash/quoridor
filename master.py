@@ -1,3 +1,6 @@
+import copy
+
+
 class Master:
     def __init__(self, board, players):
         self.board = board
@@ -5,16 +8,12 @@ class Master:
 
     def start(self):
         self.board.show()
-        order = self.board.order
-        for player in self.players:
-            player.register_board(self.board)
         while True:
             for player in self.players:
                 while True:
-                    player.think()
-                    if self.board.order != order:
-                        order = self.board.order
-                        break
-                    else:
+                    board = copy.deepcopy(self.board)
+                    if not player.think(board).launch(self.board):
                         print('それ不正だよ')
+                    else:
+                        break
                 self.board.show()
