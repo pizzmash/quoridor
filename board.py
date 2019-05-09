@@ -115,6 +115,15 @@ class Board:
                     result.append(VerticalWallMove(h=h, v=v))
         return result
 
+    def is_goaled(self):
+        result = []
+        for player in self.ORDER:
+            if self.pieces[player][0] in self.goal_v:
+                result.append(True)
+            else:
+                result.append(False)
+        return result
+
     def distance(self):
         result = []
         for player in self.ORDER:
