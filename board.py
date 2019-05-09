@@ -1,3 +1,4 @@
+import queue
 from enum import Enum
 from ditch import Ditch
 
@@ -18,8 +19,9 @@ class Board:
         self.ditch = Ditch(size)
         self.order = self.ORDER.FIRST_HAND
 
-    def another_player(self):
-        if self.order == self.ORDER.FIRST_HAND:
+    def another_player(self, player=None):
+        player = self.order if player is None else player
+        if player == self.ORDER.FIRST_HAND:
             return self.ORDER.SECOND_HAND
         else:
             return self.ORDER.FIRST_HAND
@@ -27,9 +29,10 @@ class Board:
     def turn(self):
         self.order = self.another_player()
 
-    def movable_mass(self, from_h=None, from_v=None):
+    def movable_mass(self, player=None, from_h=None, from_v=None, is_jumping=False):
+        player = self.order if player is None else player
         if from_h is None or from_v is None:
-            from_v, from_h = self.pieces[self.order]
+            from_v, from_h = self.pieces[player]
         mass = []
         dir = [[-1, 0], [0, -1], [0, 1], [1, 0]]
         for d in dir:
@@ -46,9 +49,16 @@ class Board:
                 else:
                     ditch_pos_h, ditch_pos_v = from_h, from_v
                 if ditch[ditch_pos_v][ditch_pos_h] == self.ditch.STATE.EMPTY:
-                    if [v, h] == self.pieces[self.another_player()]:
+                    is_overlapped = \
+                        [v, h] == self.pieces[self.another_player(player=player)]
+                    if not is_jumping and is_overlapped:
                         # TODO: これだと相手が隣接しているところだったら方向を問わず跳べちゃう
-                        mass += self.movable_mass(h, v)
+                        mass += self.movable_mass(
+                            player=self.another_player(player=player),
+                            from_h=h,
+                            from_v=v,
+                            is_jumping=True
+                        )
                     else:
                         mass += [[v, h]]
         try:
@@ -80,6 +90,16 @@ class Board:
             return True
         else:
             return False
+    """
+        def is_opened(self):
+            for player in self.ORDER:
+                q = queue.Queue()
+                is_visited = [[False] * self.size for i in range(self.size)]
+                q.put(self.pieces[player])
+                while not q.empty():
+                    dir = [[-1, 0], [0, -1], [0, 1], [1, 0]]
+                    for d in dir:
+    """
 
     def show(self):
         print('+', end='')
