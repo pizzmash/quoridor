@@ -22,4 +22,7 @@ class DistanceEvaluation(Evaluation):
             return -float('inf')
         else:
             distance = board.distance()
-            return distance[1] - distance[0]
+            walls = board.walls
+            dd = distance[1] - distance[0]
+            dw = walls[board.ORDER.FIRST_HAND] - walls[board.ORDER.SECOND_HAND]
+            return dd * 0.75 + dw * 0.25

@@ -84,6 +84,7 @@ class Board:
     def put_horizontal_wall(self, h, v):
         if self.walls[self.order] > 0 and self.ditch.fill_horizontal(h, v):
             if -1 in self.distance():
+                print(self.distance())
                 self.ditch.reset_horizontal(h, v)
                 return False
             self.walls[self.order] -= 1
@@ -107,12 +108,17 @@ class Board:
         result = []
         for m in self.movable_mass():
             result.append(PieceMove(h=m[1], v=m[0]))
-        for v in range(self.size-1):
-            for h in range(self.size-1):
-                if self.ditch.is_fillable_horizontal(h, v):
-                    result.append(HorizontalWallMove(h=h, v=v))
-                if self.ditch.is_fillable_vertical(h, v):
-                    result.append(VerticalWallMove(h=h, v=v))
+        if self.walls[self.order] > 0:
+            for v in range(self.size-1):
+                for h in range(self.size-1):
+                    if self.ditch.fill_horizontal(h, v):
+                        if -1 not in self.distance():
+                            result.append(HorizontalWallMove(h=h, v=v))
+                        self.ditch.reset_horizontal(h, v)
+                    if self.ditch.fill_vertical(h, v):
+                        if -1 not in self.distance():
+                            result.append(VerticalWallMove(h=h, v=v))
+                        self.ditch.reset_vertical(h, v)
         return result
 
     def is_goaled(self):

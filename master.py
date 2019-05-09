@@ -1,4 +1,5 @@
 import copy
+import os
 
 
 class Master:
@@ -14,12 +15,14 @@ class Master:
                 while True:
                     print(self.board.order)
                     board = copy.deepcopy(self.board)
-                    if not player.think(board).launch(self.board):
+                    move = player.think(board)
+                    if not move.launch(self.board):
                         print('不正な着手です．')
                     else:
                         break
+                os.system('clear')
                 self.board.show()
                 if True in self.board.is_goaled():
-                    print(board.another_player(), 'の勝ちです．')
+                    print(board.order, 'の勝ちです．')
                     is_end = True
                     break

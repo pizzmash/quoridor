@@ -1,5 +1,6 @@
 from human import Human
 import copy
+from tqdm import tqdm
 
 
 class MiniMax(Human):
@@ -10,7 +11,6 @@ class MiniMax(Human):
     def think(self, board):
         self.is_first_hand = board.order == board.ORDER.FIRST_HAND
         move, val = self.search(board, depth=self.depth)
-        print(val)
         return move
 
     def search(self, board, depth, alpha=None, beta=None):
@@ -19,7 +19,7 @@ class MiniMax(Human):
             return None, self.eval.eval(board)
         elif depth <= 0:
             return None, self.eval.eval(board)
-        for move in board.regal_move():
+        for move in tqdm(board.regal_move()):
             vir = copy.deepcopy(board)
             move.launch(vir)
             _, val = self.search(board=vir, depth=depth-1, alpha=alpha, beta=beta)
