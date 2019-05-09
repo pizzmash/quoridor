@@ -2,6 +2,7 @@ import queue
 import copy
 from enum import Enum
 from ditch import Ditch
+from move import PieceMove, HorizontalWallMove, VerticalWallMove
 
 
 class Board:
@@ -101,6 +102,18 @@ class Board:
             return True
         else:
             return False
+
+    def regal_move(self):
+        result = []
+        for m in self.movable_mass():
+            result.append(PieceMove(h=m[1], v=m[0]))
+        for v in range(self.size-1):
+            for h in range(self.size-1):
+                if self.ditch.is_fillable_horizontal(h, v):
+                    result.append(HorizontalWallMove(h=h, v=v))
+                if self.ditch.is_fillable_vertical(h, v):
+                    result.append(VerticalWallMove(h=h, v=v))
+        return result
 
     def distance(self):
         result = []
