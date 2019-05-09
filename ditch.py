@@ -30,6 +30,11 @@ class Ditch:
         else:
             return False
 
+    def reset_horizontal(self, h, v):
+        self.horizontal[v][h] = self.STATE.EMPTY
+        self.horizontal[v][h+1] = self.STATE.EMPTY
+        self.xpt[v][h] = self.STATE.EMPTY
+
     def fill_vertical(self, h, v):
         if self.is_fillable_vertical(h, v):
             self.vertical[v][h] = self.STATE.FILLED
@@ -38,3 +43,8 @@ class Ditch:
             return True
         else:
             return False
+
+    def reset_vertical(self, h, v):
+        self.vertical[v][h] = self.STATE.EMPTY
+        self.vertical[v+1][h] = self.STATE.EMPTY
+        self.xpt[v][h] = self.STATE.EMPTY

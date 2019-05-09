@@ -11,6 +11,7 @@ class Master:
         while True:
             for player in self.players:
                 while True:
+                    print(self.board.distance())
                     board = copy.deepcopy(self.board)
                     if not player.think(board).launch(self.board):
                         print('それ不正だよ')

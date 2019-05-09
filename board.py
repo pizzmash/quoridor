@@ -1,4 +1,5 @@
 import queue
+import copy
 from enum import Enum
 from ditch import Ditch
 
@@ -15,6 +16,10 @@ class Board:
         self.walls = {
             self.ORDER.FIRST_HAND: wall,
             self.ORDER.SECOND_HAND: wall
+        }
+        self.goal_v = {
+            self.ORDER.FIRST_HAND: size-1,
+            self.ORDER.SECOND_HAND: 0
         }
         self.ditch = Ditch(size)
         self.order = self.ORDER.FIRST_HAND
@@ -77,6 +82,9 @@ class Board:
 
     def put_horizontal_wall(self, h, v):
         if self.walls[self.order] > 0 and self.ditch.fill_horizontal(h, v):
+            if -1 in self.distance():
+                self.ditch.reset_horizontal(h, v)
+                return False
             self.walls[self.order] -= 1
             self.turn()
             return True
@@ -85,21 +93,43 @@ class Board:
 
     def put_vertical_wall(self, h, v):
         if self.walls[self.order] > 0 and self.ditch.fill_vertical(h, v):
+            if -1 in self.distance():
+                self.ditch.reset_vertical(h, v)
+                return False
             self.walls[self.order] -= 1
             self.turn()
             return True
         else:
             return False
-    """
-        def is_opened(self):
-            for player in self.ORDER:
-                q = queue.Queue()
-                is_visited = [[False] * self.size for i in range(self.size)]
-                q.put(self.pieces[player])
-                while not q.empty():
-                    dir = [[-1, 0], [0, -1], [0, 1], [1, 0]]
-                    for d in dir:
-    """
+
+    def distance(self):
+        result = []
+        for player in self.ORDER:
+            q = queue.Queue()
+            is_visited = [[False] * self.size for i in range(self.size)]
+            is_goaled = False
+            q.put((self.pieces[player], 0))
+            is_visited[self.pieces[player][0]][self.pieces[player][1]] = True
+            while not q.empty():
+                pos = q.get()
+                mass = self.movable_mass(
+                    player=player,
+                    from_h=pos[0][1],
+                    from_v=pos[0][0],
+                )
+                for m in copy.deepcopy(mass):
+                    if is_visited[m[0]][m[1]]:
+                        mass.remove(m)
+                if self.goal_v[player] in [mass[i][0] for i in range(len(mass))]:
+                    is_goaled = True
+                    distance = pos[1]+1
+                    break
+                else:
+                    for m in mass:
+                        q.put((m, pos[1]+1))
+                        is_visited[m[0]][m[1]] = True
+            result.append(distance if is_goaled else -1)
+        return result
 
     def show(self):
         print('+', end='')
