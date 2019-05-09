@@ -9,16 +9,20 @@ class MiniMax(Human):
 
     def think(self, board):
         self.is_first_hand = board.order == board.ORDER.FIRST_HAND
-        return self.think(board, depth=self.depth)[0]
+        move, val = self.search(board, depth=self.depth)
+        print(val)
+        return move
 
-    def think(self, board, depth, alpha=None, beta=None):
+    def search(self, board, depth, alpha=None, beta=None):
+        result = None
         if True in board.is_goaled():
             return None, self.eval.eval(board)
         elif depth <= 0:
             return None, self.eval.eval(board)
         for move in board.regal_move():
-            vir = move.launch(copy.deepcopy(board))
-            _, val = self.think(board=vir, depth=depth-1, alpha=alpha, beta=beta)
+            vir = copy.deepcopy(board)
+            move.launch(vir)
+            _, val = self.search(board=vir, depth=depth-1, alpha=alpha, beta=beta)
             if board.order == board.ORDER.FIRST_HAND:
                 if alpha is None or val > alpha:
                     result = move

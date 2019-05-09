@@ -118,7 +118,7 @@ class Board:
     def is_goaled(self):
         result = []
         for player in self.ORDER:
-            if self.pieces[player][0] in self.goal_v:
+            if self.pieces[player][0] == self.goal_v[player]:
                 result.append(True)
             else:
                 result.append(False)

@@ -22,4 +22,4 @@ class DistanceEvaluation(Evaluation):
             return -float('inf')
         else:
             distance = board.distance()
-            return distance[0] - distance[1]
+            return distance[1] - distance[0]
