@@ -84,7 +84,6 @@ class Board:
     def put_horizontal_wall(self, h, v):
         if self.walls[self.order] > 0 and self.ditch.fill_horizontal(h, v):
             if -1 in self.distance():
-                print(self.distance())
                 self.ditch.reset_horizontal(h, v)
                 return False
             self.walls[self.order] -= 1
