@@ -19,6 +19,7 @@ class MiniMax(Human):
             return None, self.eval.eval(board)
         elif depth <= 0:
             return None, self.eval.eval(board)
+        is_end = False
         for move in tqdm(board.regal_move()):
             vir = copy.deepcopy(board)
             move.launch(vir)
@@ -31,7 +32,7 @@ class MiniMax(Human):
                 if beta is None or val < beta:
                     result = move
                     beta = val
-            if alpha is not None and beta is not None and alpha > beta:
+            if alpha is not None and beta is not None and alpha >= beta:
                 break
         if board.order == vir.ORDER.FIRST_HAND:
             return result, alpha
