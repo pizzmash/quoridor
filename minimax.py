@@ -9,18 +9,30 @@ class MiniMax(Human):
         self.depth = depth
 
     def think(self, board):
-        self.is_first_hand = board.order == board.ORDER.FIRST_HAND
-        move, val = self.search(board, depth=self.depth)
+        dict = {}
+        moves = list(board.regal_move())
+        vir = copy.deepcopy(board)
+        for move in moves:
+            move.launch(vir)
+            dict[move] = self.eval.eval(vir)
+        mag = -1 if board.order == board.ORDER.FIRST_HAND else 1
+        dict = sorted(dict.items(), key=lambda x: mag * x[1])
+        moves = [x[0] for x in dict]
+        move, val = self.search(board, depth=self.depth, moves=moves)
         return move
 
-    def search(self, board, depth, alpha=None, beta=None):
+    def search(self, board, depth, moves=None, alpha=None, beta=None):
         result = None
         if True in board.is_goaled():
             return None, self.eval.eval(board)
         elif depth <= 0:
             return None, self.eval.eval(board)
         is_end = False
-        for move in tqdm(board.regal_move()):
+        if moves is None:
+            regal_move = board.regal_move
+        else:
+            regal_move = lambda: moves
+        for move in tqdm(regal_move()):
             vir = copy.deepcopy(board)
             move.launch(vir)
             _, val = self.search(board=vir, depth=depth-1, alpha=alpha, beta=beta)
