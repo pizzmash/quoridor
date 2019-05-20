@@ -6,13 +6,12 @@ from minimax import MiniMax
 
 
 def main():
-    size = 9
-    wall = 10
+    size = 7
+    wall = 8
     board = Board(size=size, wall=wall)
     eval = DistanceEvaluation()
-    p1 = MiniMax(eval, depth=2)
-    # p1 = Human()
-    p2 = MiniMax(eval, depth=2)
+    p1 = MiniMax(eval, depth=3)
+    p2 = MiniMax(eval, depth=3)
     master = Master(board, [p1, p2])
     master.start()
 

@@ -107,19 +107,18 @@ class Board:
     def regal_move(self):
         result = []
         for m in self.movable_mass():
-            result.append(PieceMove(h=m[1], v=m[0]))
+            yield PieceMove(h=m[1], v=m[0])
         if self.walls[self.order] > 0:
             for v in range(self.size-1):
                 for h in range(self.size-1):
                     if self.ditch.fill_horizontal(h, v):
                         if -1 not in self.distance():
-                            result.append(HorizontalWallMove(h=h, v=v))
+                            yield HorizontalWallMove(h=h, v=v)
                         self.ditch.reset_horizontal(h, v)
                     if self.ditch.fill_vertical(h, v):
                         if -1 not in self.distance():
-                            result.append(VerticalWallMove(h=h, v=v))
+                            yield VerticalWallMove(h=h, v=v)
                         self.ditch.reset_vertical(h, v)
-        return result
 
     def is_goaled(self):
         result = []
