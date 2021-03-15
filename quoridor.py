@@ -1,8 +1,11 @@
+import tkinter
+
 from board import Board
 from human import Human
 from master import Master
 from evaluation import DistanceEvaluation
 from minimax import MiniMax
+from app import App
 
 
 def main():
@@ -13,7 +16,11 @@ def main():
     p1 = MiniMax(eval, depth=3)
     p2 = MiniMax(eval, depth=3)
     master = Master(board, [p1, p2])
-    master.start()
+    # master.start()
+
+    root = tkinter.Tk()
+    app = App(root, 600, 10, board)
+    app.mainloop()
 
 
 if __name__ == '__main__':
