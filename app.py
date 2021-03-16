@@ -21,6 +21,8 @@ class App(tkinter.Frame):
         self.side = side
         self.margin = margin
 
+        self.piece_colors = ["red", "blue"]
+
         # マスの幅と溝の幅の比
         self.mass_ditch_width_rate = 5.
         # コマの幅とマスの幅の比
@@ -32,34 +34,92 @@ class App(tkinter.Frame):
 
         self.thread = threading.Thread(target=self.game)
 
-    def draw(self):
-        self.canvas.create_rectangle(self.margin, self.margin, self.margin + self.side, self.margin + self.side, fill="burlywood1")
-        mass_margin = (1. - self.piece_mass_width_rate) / 2. * self.mass_side
+    def draw_board(self):
+        self.canvas.create_rectangle(
+            self.margin,
+            self.margin,
+            self.margin + self.side,
+            self.margin + self.side,
+            fill="burlywood1"
+        )
         for v in range(self.board.size):
             for h in range(self.board.size):
                 x, y = self.idx_to_mass_pos(h, v)
-                self.canvas.create_rectangle(x, y, x + self.mass_side, y + self.mass_side, fill="burlywood1")
-                if [v, h] == self.board.pieces[self.board.ORDER.FIRST_HAND]:
-                    x, y = self.idx_to_mass_pos(self.board.pieces[self.board.ORDER.FIRST_HAND][1], self.board.pieces[self.board.ORDER.FIRST_HAND][0])
-                    self.canvas.create_oval(x + mass_margin, y + mass_margin, x + mass_margin + self.mass_side * self.piece_mass_width_rate, y + mass_margin + self.mass_side * self.piece_mass_width_rate, fill="red")
-                elif [v, h] == self.board.pieces[self.board.ORDER.SECOND_HAND]:
-                    x, y = self.idx_to_mass_pos(self.board.pieces[self.board.ORDER.SECOND_HAND][1], self.board.pieces[self.board.ORDER.SECOND_HAND][0])
-                    self.canvas.create_oval(x + mass_margin, y + mass_margin, x + mass_margin + self.mass_side * self.piece_mass_width_rate, y + mass_margin + self.mass_side * self.piece_mass_width_rate, fill="blue")
+                self.canvas.create_rectangle(
+                    x,
+                    y,
+                    x + self.mass_side,
+                    y + self.mass_side,
+                    fill="burlywood1"
+                )
+
+    def draw_piece(self):
+        mass_margin = (1. - self.piece_mass_width_rate) / 2. * self.mass_side
+        for i, order in enumerate(self.board.ORDER):
+            v, h = self.board.pieces[order]
+            x, y = self.idx_to_mass_pos(h, v)
+            self.canvas.create_oval(
+                x + mass_margin,
+                y + mass_margin,
+                x + mass_margin + self.mass_side * self.piece_mass_width_rate,
+                y + mass_margin + self.mass_side * self.piece_mass_width_rate,
+                fill=self.piece_colors[i],
+                tag="piece"
+            )
+
+    def draw_wall(self):
+        for v in range(self.board.size):
+            for h in range(self.board.size):
                 if h < self.board.size - 1:
-                    if self.board.ditch.vertical[v][h] == self.board.ditch.STATE.FILLED:
+                    if self.board.ditch.vertical[v][h] \
+                            == self.board.ditch.STATE.FILLED:
                         x, y = self.idx_to_vertical_wall_pos(h, v)
-                        self.canvas.create_rectangle(x, y, x + self.ditch_width, y + self.mass_side, fill="burlywood4")
+                        self.canvas.create_rectangle(
+                            x,
+                            y,
+                            x + self.ditch_width,
+                            y + self.mass_side,
+                            fill="burlywood4",
+                            tag="wall"
+                        )
                 if v < self.board.size - 1:
-                    if self.board.ditch.horizontal[v][h] == self.board.ditch.STATE.FILLED:
+                    if self.board.ditch.horizontal[v][h] \
+                            == self.board.ditch.STATE.FILLED:
                         x, y = self.idx_to_horizontal_wall_pos(h, v)
-                        self.canvas.create_rectangle(x, y, x + self.mass_side, y + self.ditch_width, fill="burlywood4")
+                        self.canvas.create_rectangle(
+                            x,
+                            y,
+                            x + self.mass_side,
+                            y + self.ditch_width,
+                            fill="burlywood4",
+                            tag="wall"
+                        )
                 if v < self.board.size - 1 and h < self.board.size - 1:
-                    if self.board.ditch.xpt[v][h] == self.board.ditch.STATE.FILLED:
+                    if self.board.ditch.xpt[v][h] \
+                            == self.board.ditch.STATE.FILLED:
                         x, y = self.idx_to_cross_ponit_pos(h, v)
-                        self.canvas.create_rectangle(x, y, x + self.ditch_width, y + self.ditch_width, fill="burlywood4")
+                        self.canvas.create_rectangle(
+                            x,
+                            y,
+                            x + self.ditch_width,
+                            y + self.ditch_width,
+                            fill="burlywood4",
+                            tag="wall"
+                        )
+
+    def draw(self):
+        self.draw_board()
+        self.draw_piece()
+        self.draw_wall()
 
     def clear(self):
         self.canvas.delete("all")
+
+    def clear_piece(self):
+        self.canvas.delete("piece")
+
+    def clear_wall(self):
+        self.canvas.delete("wall")
 
     def idx_to_mass_pos(self, h, v):
         x = self.margin + (h + 1) * self.ditch_width + h * self.mass_side
@@ -117,8 +177,9 @@ class App(tkinter.Frame):
                 move = player.think(board)
                 if move.launch(self.board):
                     break
-            self.clear()
-            self.draw()
+            self.clear_piece()
+            self.draw_piece()
+            self.draw_wall()
             if True in self.board.is_goaled():
                 pass
                 break
