@@ -5,6 +5,7 @@ from human import Human
 from master import Master
 from evaluation import DistanceEvaluation
 from minimax import MiniMax
+from randombot import RandomBot
 from app import App
 
 
@@ -13,8 +14,8 @@ def main():
     wall = 8
     board = Board(size=size, wall=wall)
     eval = DistanceEvaluation()
-    p1 = MiniMax(eval, depth=2)
-    p2 = MiniMax(eval, depth=2)
+    p1 = RandomBot()
+    p2 = RandomBot()
     master = Master(board, [p1, p2])
     # master.start()
 
