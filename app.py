@@ -14,6 +14,7 @@ class App(tkinter.Frame):
         # キャンバス生成
         self.canvas = tkinter.Canvas(master, height=side+margin*2, width=side+margin*2)
         self.canvas.bind("<Button-1>", self.canvas_click_listener)
+        self.canvas.pack()
 
         self.board = board
         self.players = players
@@ -51,11 +52,11 @@ class App(tkinter.Frame):
                 if v < self.board.size - 1:
                     if self.board.ditch.horizontal[v][h] == self.board.ditch.STATE.FILLED:
                         x, y = self.idx_to_horizontal_wall_pos(h, v)
-                        self.canvas.create_rectangle(x, y, x + self.mass_side, y + self.ditch_width, fill = "burlywood4")
-        for order in self.board.ORDER:
-            piece = self.board.pieces[order]
-
-        self.canvas.pack()
+                        self.canvas.create_rectangle(x, y, x + self.mass_side, y + self.ditch_width, fill="burlywood4")
+                if v < self.board.size - 1 and h < self.board.size - 1:
+                    if self.board.ditch.xpt[v][h] == self.board.ditch.STATE.FILLED:
+                        x, y = self.idx_to_cross_ponit_pos(h, v)
+                        self.canvas.create_rectangle(x, y, x + self.ditch_width, y + self.ditch_width, fill="burlywood4")
 
     def clear(self):
         self.canvas.delete("all")
@@ -73,6 +74,11 @@ class App(tkinter.Frame):
     def idx_to_vertical_wall_pos(self, h, v):
         x = self.margin + (h + 1) * self.ditch_width + (h + 1) * self.mass_side
         y = self.margin + (v + 1) * self.ditch_width + v * self.mass_side
+        return x, y
+
+    def idx_to_cross_ponit_pos(self, h, v):
+        x = self.margin + (h + 1) * self.ditch_width + (h + 1) * self.mass_side
+        y = self.margin + (v + 1) * self.ditch_width + (v + 1) * self.mass_side
         return x, y
 
     def pos_to_idx(self, x, y):
