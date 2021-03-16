@@ -178,6 +178,7 @@ class App(tkinter.Frame):
                 if move.launch(self.board):
                     break
             self.clear_piece()
+            self.clear_wall()
             self.draw_piece()
             self.draw_wall()
             if True in self.board.is_goaled():
