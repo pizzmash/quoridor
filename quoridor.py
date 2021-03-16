@@ -13,13 +13,13 @@ def main():
     wall = 8
     board = Board(size=size, wall=wall)
     eval = DistanceEvaluation()
-    p1 = MiniMax(eval, depth=3)
-    p2 = MiniMax(eval, depth=3)
+    p1 = MiniMax(eval, depth=2)
+    p2 = MiniMax(eval, depth=2)
     master = Master(board, [p1, p2])
     # master.start()
 
     root = tkinter.Tk()
-    app = App(root, 600, 10, board)
+    app = App(root, 600, 10, board, [p1, p2])
     app.mainloop()
 
 
