@@ -1,9 +1,9 @@
-from human import Human
+from player import Player
 import copy
 from tqdm import tqdm
 
 
-class MiniMax(Human):
+class MiniMax(Player):
     def __init__(self, eval, depth=3, depth_sort=2):
         self.eval = eval
         self.depth = depth
