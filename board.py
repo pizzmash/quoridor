@@ -10,6 +10,7 @@ class Board:
 
     def __init__(self, size=7, wall=8):
         self.size = size
+        self.wall = wall
         self.pieces = {
             self.ORDER.FIRST_HAND: [0, (int)(size/2)],
             self.ORDER.SECOND_HAND: [size-1, (int)(size/2)]
