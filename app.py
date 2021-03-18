@@ -2,6 +2,8 @@ import tkinter
 import threading
 import copy
 
+from move import PieceMove, HorizontalWallMove, VerticalWallMove
+
 
 class MoveStack:
     def __init__(self):
@@ -10,10 +12,8 @@ class MoveStack:
         self.valid = False
 
     def update(self, move):
-        if self.lock.locked():
-            return False
         self.lock.acquire()
-        self.lock.move = move
+        self.move = move
         self.valid = True
         self.lock.release()
         return True
@@ -30,7 +30,7 @@ class MoveStack:
 
 
 class App(tkinter.Frame):
-    def __init__(self, master, side, margin, board, players):
+    def __init__(self, master, side, margin, board, players, move_stack=None):
         super().__init__(master)
         self.pack()
 
@@ -57,6 +57,8 @@ class App(tkinter.Frame):
         self.mass_side = side / (board.size + (board.size + 1) / self.mass_ditch_width_rate)
         # 溝の幅
         self.ditch_width = side / (board.size + (board.size + 1) / self.mass_ditch_width_rate) / self.mass_ditch_width_rate
+
+        self.move_stack = move_stack
 
         self.thread = threading.Thread(target=self.game)
         self.thread.setDaemon(True)
@@ -168,32 +170,45 @@ class App(tkinter.Frame):
         y = self.margin + (v + 1) * self.ditch_width + (v + 1) * self.mass_side
         return x, y
 
-    def pos_to_idx(self, x, y):
+    def pos_to_move(self, x, y):
         if x <= self.margin or y <= self.margin \
                 or x > self.margin + self.side \
                 or y > self.margin + self.side:
-            return -2
+            return None
         h = (x - self.margin) / (self.mass_side + self.ditch_width)
         v = (y - self.margin) / (self.mass_side + self.ditch_width)
-        is_h_wall = h - int(h) < 1 / (self.mass_ditch_width_rate + 1)
-        is_v_wall = v - int(v) < 1 / (self.mass_ditch_width_rate + 1)
+        is_h_wall = v - int(v) < 1 / (self.mass_ditch_width_rate + 1)
+        is_v_wall = h - int(h) < 1 / (self.mass_ditch_width_rate + 1)
+        h = int(h)
+        v = int(v)
         if is_h_wall and is_v_wall:
-            return -1
+            return None
         elif is_h_wall:
-            return 2, int(h) - 1, int(v)
+            v -= 1
+            if 0 <= h < self.board.size and 0 <= v < self.board.size:
+                if h == self.board.size - 1:
+                    return HorizontalWallMove(h - 1, v)
+                else:
+                    return HorizontalWallMove(h, v)
+            else:
+                return None
         elif is_v_wall:
-            return 3, int(h), int(v) - 1
+            h -= 1
+            if 0 <= h < self.board.size and 0 <= v < self.board.size:
+                if v == self.board.size - 1:
+                    return VerticalWallMove(h, v - 1)
+                else:
+                    return VerticalWallMove(h, v)
+            else:
+                return None
         else:
-            return 1, int(h), int(v)
+            return PieceMove(h, v)
 
     def canvas_click_listener(self, event):
-        pos_info = self.pos_to_idx(event.x, event.y)
-        if pos_info == -2:
-            print("out of range")
-        elif pos_info == -1:
-            print("ditch x ditch!")
-        else:
-            print(pos_info[0], pos_info[1], pos_info[2])
+        move = self.pos_to_move(event.x, event.y)
+        if self.move_stack is not None:
+            if move is not None:
+                self.move_stack.update(move)
 
     def game(self):
         self.draw()
