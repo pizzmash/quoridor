@@ -3,19 +3,17 @@ import threading
 import copy
 
 
-class ClickedPositionInfo:
+class MoveStack:
     def __init__(self):
         self.lock = threading.Lock()
-        self.x = None
-        self.y = None
+        self.move = None
         self.valid = False
 
-    def update(self, x, y):
+    def update(self, move):
         if self.lock.locked():
             return False
         self.lock.acquire()
-        self.lock.x = x
-        self.lock.y = y
+        self.lock.move = move
         self.valid = True
         self.lock.release()
         return True
@@ -25,11 +23,10 @@ class ClickedPositionInfo:
         if not self.valid:
             self.lock.release()
             return None
-        x = self.x
-        y = self.y
+        move = self.move
         self.valid = False
         self.lock.release()
-        return x, y
+        return move
 
 
 class App(tkinter.Frame):
