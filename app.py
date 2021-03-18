@@ -33,6 +33,7 @@ class App(tkinter.Frame):
         self.ditch_width = side / (board.size + (board.size + 1) / self.mass_ditch_width_rate) / self.mass_ditch_width_rate
 
         self.thread = threading.Thread(target=self.game)
+        self.thread.setDaemon(True)
 
     def draw_board(self):
         self.canvas.create_rectangle(
@@ -170,7 +171,7 @@ class App(tkinter.Frame):
 
     def game(self):
         self.draw()
-        while getattr(self.thread, "run", True):
+        while True:
             while True:
                 player = self.players[0] if self.board.order == self.board.ORDER.FIRST_HAND else self.players[1]
                 board = copy.deepcopy(self.board)
@@ -188,5 +189,3 @@ class App(tkinter.Frame):
     def mainloop(self):
         self.thread.start()
         super().mainloop()
-        self.thread.run = False
-        self.thread.join()
