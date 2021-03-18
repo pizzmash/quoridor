@@ -40,6 +40,7 @@ class App(tkinter.Frame):
         # キャンバス生成
         self.canvas = tkinter.Canvas(master, height=side+margin*2, width=side+margin*2)
         self.canvas.bind("<Button-1>", self.canvas_click_listener)
+        self.canvas.bind("<Motion>", self.canvas_motion_listener)
         self.canvas.pack()
 
         self.board = board
@@ -221,6 +222,27 @@ class App(tkinter.Frame):
         if self.move_stack is not None:
             if move is not None:
                 self.move_stack.update(move)
+
+    def canvas_motion_listener(self, event):
+        color = "black"
+        tag = "candidate"
+        self.canvas.delete(tag)
+        move = self.pos_to_move(event.x, event.y)
+        if move is not None:
+            board = copy.deepcopy(self.board)
+            valid = move.launch(board)
+            if not valid:
+                return
+            if isinstance(move, HorizontalWallMove):
+                self.draw_horizontal_wall(move.h, move.v, color, tag)
+                self.draw_horizontal_wall(move.h + 1, move.v, color, tag)
+                self.draw_xpt_wall(move.h, move.v, color, tag)
+            elif isinstance(move, VerticalWallMove):
+                self.draw_vertical_wall(move.h, move.v, color, tag)
+                self.draw_vertical_wall(move.h, move.v + 1, color, tag)
+                self.draw_xpt_wall(move.h, move.v, color, tag)
+            elif isinstance(move, PieceMove):
+                self.draw_piece(move.h, move.v, color, tag)
 
     def game(self):
         self.draw()
