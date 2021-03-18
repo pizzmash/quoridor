@@ -82,64 +82,76 @@ class App(tkinter.Frame):
                     fill="burlywood1"
                 )
 
-    def draw_piece(self):
+    def draw_piece(self, h, v, color, tag="piece"):
         mass_margin = (1. - self.piece_mass_width_rate) / 2. * self.mass_side
+        x, y = self.idx_to_mass_pos(h, v)
+        self.canvas.create_oval(
+            x + mass_margin,
+            y + mass_margin,
+            x + mass_margin + self.mass_side * self.piece_mass_width_rate,
+            y + mass_margin + self.mass_side * self.piece_mass_width_rate,
+            fill=color,
+            tag=tag
+        )
+
+    def draw_pieces(self):
         for i, order in enumerate(self.board.ORDER):
             v, h = self.board.pieces[order]
-            x, y = self.idx_to_mass_pos(h, v)
-            self.canvas.create_oval(
-                x + mass_margin,
-                y + mass_margin,
-                x + mass_margin + self.mass_side * self.piece_mass_width_rate,
-                y + mass_margin + self.mass_side * self.piece_mass_width_rate,
-                fill=self.piece_colors[i],
-                tag="piece"
-            )
+            self.draw_piece(h, v, self.piece_colors[i])
 
-    def draw_wall(self):
+    def draw_vertical_wall(self, h, v, color, tag="wall"):
+        x, y = self.idx_to_vertical_wall_pos(h, v)
+        self.canvas.create_rectangle(
+            x,
+            y,
+            x + self.ditch_width,
+            y + self.mass_side,
+            fill=color,
+            tag=tag
+        )
+
+    def draw_horizontal_wall(self, h, v, color, tag="wall"):
+        x, y = self.idx_to_horizontal_wall_pos(h, v)
+        self.canvas.create_rectangle(
+            x,
+            y,
+            x + self.mass_side,
+            y + self.ditch_width,
+            fill=color,
+            tag=tag
+        )
+
+    def draw_xpt_wall(self, h, v, color, tag="wall"):
+        x, y = self.idx_to_cross_ponit_pos(h, v)
+        self.canvas.create_rectangle(
+            x,
+            y,
+            x + self.ditch_width,
+            y + self.ditch_width,
+            fill=color,
+            tag=tag
+        )
+
+    def draw_walls(self):
         for v in range(self.board.size):
             for h in range(self.board.size):
                 if h < self.board.size - 1:
                     if self.board.ditch.vertical[v][h] \
                             == self.board.ditch.STATE.FILLED:
-                        x, y = self.idx_to_vertical_wall_pos(h, v)
-                        self.canvas.create_rectangle(
-                            x,
-                            y,
-                            x + self.ditch_width,
-                            y + self.mass_side,
-                            fill="burlywood4",
-                            tag="wall"
-                        )
+                        self.draw_vertical_wall(h, v, "burlywood4")
                 if v < self.board.size - 1:
                     if self.board.ditch.horizontal[v][h] \
                             == self.board.ditch.STATE.FILLED:
-                        x, y = self.idx_to_horizontal_wall_pos(h, v)
-                        self.canvas.create_rectangle(
-                            x,
-                            y,
-                            x + self.mass_side,
-                            y + self.ditch_width,
-                            fill="burlywood4",
-                            tag="wall"
-                        )
+                        self.draw_horizontal_wall(h, v, "burlywood4")
                 if v < self.board.size - 1 and h < self.board.size - 1:
                     if self.board.ditch.xpt[v][h] \
                             == self.board.ditch.STATE.FILLED:
-                        x, y = self.idx_to_cross_ponit_pos(h, v)
-                        self.canvas.create_rectangle(
-                            x,
-                            y,
-                            x + self.ditch_width,
-                            y + self.ditch_width,
-                            fill="burlywood4",
-                            tag="wall"
-                        )
+                        self.draw_xpt_wall(h, v, "burlywood4")
 
     def draw(self):
         self.draw_board()
-        self.draw_piece()
-        self.draw_wall()
+        self.draw_pieces()
+        self.draw_walls()
 
     def clear(self):
         self.canvas.delete("all")
@@ -221,8 +233,8 @@ class App(tkinter.Frame):
                     break
             self.clear_piece()
             self.clear_wall()
-            self.draw_piece()
-            self.draw_wall()
+            self.draw_pieces()
+            self.draw_walls()
             if True in self.board.is_goaled():
                 pass
                 break
