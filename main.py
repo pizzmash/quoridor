@@ -6,6 +6,7 @@ from settingframe import SettingFrame
 
 def main():
     root = tkinter.Tk()
+    root.title("Settings")
     sf = SettingFrame(root)
     sf.mainloop()
     try:

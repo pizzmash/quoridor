@@ -11,12 +11,11 @@ class SettingFrame(tkinter.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.grid()
-
         # Player 1
-        self.p1_rb = PlayerRadioButton(self, "Player 1")
+        self.p1_rb = PlayerRadioButton(self, "Player 1", borderwidth=2, relief="raised")
         self.p1_rb.grid(column=0, columnspan=2, padx=5, pady=5)
         # Player 2
-        self.p2_rb = PlayerRadioButton(self, "Player 2")
+        self.p2_rb = PlayerRadioButton(self, "Player 2", borderwidth=2, relief="raised")
         self.p2_rb.grid(column=0, columnspan=2, padx=5, pady=5)
         # board size
         self.bs_sb = SpinboxFrame(self, "board size", 9, 3, 15)
@@ -36,8 +35,8 @@ class SettingFrame(tkinter.Frame):
 
 
 class PlayerRadioButton(tkinter.Frame):
-    def __init__(self, master, text):
-        super().__init__(master)
+    def __init__(self, master, text, borderwidth=0, relief="flat"):
+        super().__init__(master, borderwidth=borderwidth, relief=relief)
         self.grid()
         label = tkinter.Label(self, text=text)
         self.var = tkinter.IntVar()
@@ -70,8 +69,8 @@ class PlayerRadioButton(tkinter.Frame):
 
 
 class EvalFrame(tkinter.Frame):
-    def __init__(self, master):
-        super().__init__(master)
+    def __init__(self, master, borderwidth=0, relief="flat"):
+        super().__init__(master, borderwidth=borderwidth, relief=relief)
         self.grid()
 
         label = tkinter.Label(self, text="eval")
