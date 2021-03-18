@@ -29,7 +29,7 @@ class MoveStack:
         return move
 
 
-class App(tkinter.Frame):
+class BoardCanvas(tkinter.Frame):
     def __init__(self, master, side, margin, board, players, move_stack=None):
         super().__init__(master)
         self.pack()

@@ -6,12 +6,12 @@ from master import Master
 from evaluation import DistanceEvaluation
 from minimax import MiniMax
 from randombot import RandomBot
-from app import App, MoveStack
+from boardcanvas import BoardCanvas, MoveStack
 
 
 def main():
-    size = 7
-    wall = 8
+    size = 9
+    wall = 10
     board = Board(size=size, wall=wall)
     eval = DistanceEvaluation()
     move_stack = MoveStack()
@@ -23,8 +23,8 @@ def main():
     # master.start()
 
     root = tkinter.Tk()
-    app = App(root, 600, 10, board, [p1, p2], move_stack)
-    app.mainloop()
+    canvas = BoardCanvas(root, 600, 10, board, [p1, p2], move_stack)
+    canvas.mainloop()
 
 
 if __name__ == '__main__':
