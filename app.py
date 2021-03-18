@@ -8,37 +8,40 @@ from evaluation import DistanceEvaluation
 from minimax import MiniMax
 from randombot import RandomBot
 from boardcanvas import BoardCanvas, MoveStack
+from settingframe import SettingFrame
 
 
 class App(tkinter.Frame):
-    def __init__(self, master):
+    def __init__(self, master, board_size, wall, players):
         self.width = 800
         self.height = 620
-        super().__init__(master, width=self.width, height=self.height)
-        self.pack()
-
-        master.geometry("{}x{}".format(self.width, self.height))
+        super().__init__(master)
         master.title("Quoridor")
+        self.grid()
+        self.setup(board_size, wall, players)
+        
 
-        self.size = 9
-        self.wall = 10
-        self.board = Board(size=self.size, wall=self.wall)
-        self.eval = DistanceEvaluation()
-        self.move_stack = MoveStack()
-        p1 = RandomBot()
-        p2 = Human(self.move_stack)
-        self.players = [p1, p2]
-        # p2 = MiniMax(eval, depth=2)
-        # p2 = RandomBot()
-        # master.start()
+    def setup(self, board_size, wall, players):
+        self.board = Board(size=board_size, wall=wall)
+        if isinstance(players[0], Human) or isinstance(players[1], Human):
+            self.move_stack = MoveStack()
+            for i in range(2):
+                if isinstance(players[i], Human):
+                    players[i].move_stack = self.move_stack
+        else:
+            self.move_stack = None
+        self.players = players
 
+        # canvs
         self.canvas = BoardCanvas(
-            self, self.height, 10, self.board, [p1, p2], self.move_stack
+            self, self.height, 10, self.board, self.players, self.move_stack
         )
-        self.canvas.place(width=self.height, height=self.height)
+        self.canvas.grid(row=0, column=0, rowspan=3)
+        self.canvas.draw()
 
         self.thread = threading.Thread(target=self.game)
         self.thread.setDaemon(True)
+        self.thread.start()
 
     def game(self):
         self.canvas.draw()
@@ -58,5 +61,4 @@ class App(tkinter.Frame):
                 break
 
     def mainloop(self):
-        self.thread.start()
         super().mainloop()

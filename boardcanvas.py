@@ -31,7 +31,7 @@ class MoveStack:
 
 class BoardCanvas(tkinter.Canvas):
     def __init__(self, master, side, margin, board, players, move_stack=None):
-        super().__init__(master, height=side+margin*2, width=side+margin*2)
+        super().__init__(master, height=side, width=side)
         self.bind("<Button-1>", self.click_listener)
         self.bind("<Motion>", self.motion_listener)
 
