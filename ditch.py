@@ -5,17 +5,22 @@ class Ditch:
     STATE = Enum('State', 'EMPTY, FILLED')
 
     def __init__(self, size):
+        self.size = size
         self.horizontal = [[self.STATE.EMPTY] * size for v in range(size-1)]
         self.vertical = [[self.STATE.EMPTY] * (size-1) for v in range(size)]
         self.xpt = [[self.STATE.EMPTY] * (size-1) for v in range(size-1)]
 
     def is_fillable_horizontal(self, h, v):
+        if not 0 <= h < self.size or not 0 <= v < self.size - 1:
+            return False
         is_empty_1 = self.horizontal[v][h] == self.STATE.EMPTY
         is_empty_2 = self.horizontal[v][h+1] == self.STATE.EMPTY
         is_empty_3 = self.xpt[v][h] == self.STATE.EMPTY
         return is_empty_1 and is_empty_2 and is_empty_3
 
     def is_fillable_vertical(self, h, v):
+        if not 0 <= h < self.size - 1 or not 0 <= v < self.size:
+            return False
         is_empty_1 = self.vertical[v][h] == self.STATE.EMPTY
         is_empty_2 = self.vertical[v+1][h] == self.STATE.EMPTY
         is_empty_3 = self.xpt[v][h] == self.STATE.EMPTY
