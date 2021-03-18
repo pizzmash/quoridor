@@ -8,7 +8,10 @@ def main():
     root = tkinter.Tk()
     sf = SettingFrame(root)
     sf.mainloop()
-    root.destroy()
+    try:
+        root.destroy()
+    except tkinter.TclError:
+        exit()
 
     root = tkinter.Tk()
     app = App(root, sf.board_size, sf.wall, sf.players)
