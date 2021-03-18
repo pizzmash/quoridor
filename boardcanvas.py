@@ -38,7 +38,7 @@ class BoardCanvas(tkinter.Canvas):
 
         self.board = board
         self.players = players
-        self.side = side
+        self.side = side - margin * 2
         self.margin = margin
 
         self.piece_colors = ["red", "blue"]
@@ -48,9 +48,9 @@ class BoardCanvas(tkinter.Canvas):
         # コマの幅とマスの幅の比
         self.piece_mass_width_rate = 0.8
         # マスの幅
-        self.mass_side = side / (board.size + (board.size + 1) / self.mass_ditch_width_rate)
+        self.mass_side = self.side / (board.size + (board.size + 1) / self.mass_ditch_width_rate)
         # 溝の幅
-        self.ditch_width = side / (board.size + (board.size + 1) / self.mass_ditch_width_rate) / self.mass_ditch_width_rate
+        self.ditch_width = self.side / (board.size + (board.size + 1) / self.mass_ditch_width_rate) / self.mass_ditch_width_rate
 
         self.move_stack = move_stack
 

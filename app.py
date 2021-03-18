@@ -12,11 +12,13 @@ from boardcanvas import BoardCanvas, MoveStack
 
 class App(tkinter.Frame):
     def __init__(self, master):
-        super().__init__(master)
+        self.width = 800
+        self.height = 620
+        super().__init__(master, width=self.width, height=self.height)
         self.pack()
 
-        master.geometry("{}x{}".format(800, 620))
-        master.title("title here")
+        master.geometry("{}x{}".format(self.width, self.height))
+        master.title("Quoridor")
 
         self.size = 9
         self.wall = 10
@@ -30,8 +32,10 @@ class App(tkinter.Frame):
         # p2 = RandomBot()
         # master.start()
 
-        self.canvas = BoardCanvas(self, 600, 10, self.board, [p1, p2], self.move_stack)
-        self.canvas.pack()
+        self.canvas = BoardCanvas(
+            self, self.height, 10, self.board, [p1, p2], self.move_stack
+        )
+        self.canvas.place(width=self.height, height=self.height)
 
         self.thread = threading.Thread(target=self.game)
         self.thread.setDaemon(True)
