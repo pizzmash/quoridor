@@ -31,12 +31,6 @@ class MoveStack:
 
 class BoardCanvas(tkinter.Frame):
     def __init__(self, master, side, margin, board, players, move_stack=None):
-        super().__init__(master)
-        self.pack()
-
-        master.geometry("{}x{}".format(side+margin*2, side+margin*2))
-        master.title("title here")
-
         # キャンバス生成
         self.canvas = tkinter.Canvas(master, height=side+margin*2, width=side+margin*2)
         self.canvas.bind("<Button-1>", self.canvas_click_listener)
@@ -60,9 +54,6 @@ class BoardCanvas(tkinter.Frame):
         self.ditch_width = side / (board.size + (board.size + 1) / self.mass_ditch_width_rate) / self.mass_ditch_width_rate
 
         self.move_stack = move_stack
-
-        self.thread = threading.Thread(target=self.game)
-        self.thread.setDaemon(True)
 
     def draw_board(self):
         self.canvas.create_rectangle(
@@ -243,24 +234,3 @@ class BoardCanvas(tkinter.Frame):
                 self.draw_xpt_wall(move.h, move.v, color, tag)
             elif isinstance(move, PieceMove):
                 self.draw_piece(move.h, move.v, color, tag)
-
-    def game(self):
-        self.draw()
-        while True:
-            while True:
-                player = self.players[0] if self.board.order == self.board.ORDER.FIRST_HAND else self.players[1]
-                board = copy.deepcopy(self.board)
-                move = player.think(board)
-                if move.launch(self.board):
-                    break
-            self.clear_piece()
-            self.clear_wall()
-            self.draw_pieces()
-            self.draw_walls()
-            if True in self.board.is_goaled():
-                pass
-                break
-
-    def mainloop(self):
-        self.thread.start()
-        super().mainloop()
