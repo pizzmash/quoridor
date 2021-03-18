@@ -34,8 +34,8 @@ class BoardCanvas(tkinter.Canvas):
         # キャンバス生成
         # self.canvas = tkinter.Canvas(master, height=side+margin*2, width=side+margin*2)
         super().__init__(master, height=side+margin*2, width=side+margin*2)
-        self.bind("<Button-1>", self.canvas_click_listener)
-        self.bind("<Motion>", self.canvas_motion_listener)
+        self.bind("<Button-1>", self.click_listener)
+        self.bind("<Motion>", self.motion_listener)
 
 
         self.board = board
@@ -209,13 +209,13 @@ class BoardCanvas(tkinter.Canvas):
         else:
             return PieceMove(h, v)
 
-    def canvas_click_listener(self, event):
+    def click_listener(self, event):
         move = self.pos_to_move(event.x, event.y)
         if self.move_stack is not None:
             if move is not None:
                 self.move_stack.update(move)
 
-    def canvas_motion_listener(self, event):
+    def motion_listener(self, event):
         color = "black"
         tag = "candidate"
         self.delete(tag)
