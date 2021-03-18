@@ -3,6 +3,35 @@ import threading
 import copy
 
 
+class ClickedPositionInfo:
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.x = None
+        self.y = None
+        self.valid = False
+
+    def update(self, x, y):
+        if self.lock.locked():
+            return False
+        self.lock.acquire()
+        self.lock.x = x
+        self.lock.y = y
+        self.valid = True
+        self.lock.release()
+        return True
+
+    def pop(self):
+        self.lock.acquire()
+        if not self.valid:
+            self.lock.release()
+            return None
+        x = self.x
+        y = self.y
+        self.valid = False
+        self.lock.release()
+        return x, y
+
+
 class App(tkinter.Frame):
     def __init__(self, master, side, margin, board, players):
         super().__init__(master)
