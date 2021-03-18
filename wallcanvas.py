@@ -12,10 +12,10 @@ class WallCanbas(tkinter.Canvas):
         self.wall_length = wall_length
 
     def draw(self):
-        margin_x = (self.width - self.wall * self.wall_width) / (self.wall + 1.)
-        margin_y = (self.height - self.wall_length) / 2.
+        margin_x = int((self.width - self.wall * self.wall_width) / (self.wall + 1.))
+        margin_y = int((self.height - self.wall_length) / 2.)
         for i in range(self.wall):
-            start_x = (margin_x + self.wall_width) * (i + 1) - self.wall_width / 2.
+            start_x = int((margin_x + self.wall_width) * (i + 1) - self.wall_width / 2.)
             self.create_rectangle(
                 start_x,
                 margin_y,

@@ -25,8 +25,8 @@ class App(tkinter.Frame):
 
         wall_width = self.canvas.ditch_width
         wall_length = self.canvas.mass_side * 2 + wall_width
-        wc1 = WallCanbas(self, self.board.wall, self.width, wall_length + 20, wall_width, wall_length)
-        wc2 = WallCanbas(self, self.board.wall, self.width, wall_length + 20, wall_width, wall_length)
+        wc1 = WallCanbas(self, self.board.wall, self.width, wall_length / 2 + 10, wall_width / 2, wall_length / 2)
+        wc2 = WallCanbas(self, self.board.wall, self.width, wall_length / 2 + 20, wall_width / 2, wall_length / 2)
         self.wcs = {
             self.board.ORDER.FIRST_HAND: wc1,
             self.board.ORDER.SECOND_HAND: wc2
