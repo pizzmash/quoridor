@@ -29,13 +29,14 @@ class MoveStack:
         return move
 
 
-class BoardCanvas(tkinter.Frame):
+class BoardCanvas(tkinter.Canvas):
     def __init__(self, master, side, margin, board, players, move_stack=None):
         # キャンバス生成
-        self.canvas = tkinter.Canvas(master, height=side+margin*2, width=side+margin*2)
-        self.canvas.bind("<Button-1>", self.canvas_click_listener)
-        self.canvas.bind("<Motion>", self.canvas_motion_listener)
-        self.canvas.pack()
+        # self.canvas = tkinter.Canvas(master, height=side+margin*2, width=side+margin*2)
+        super().__init__(master, height=side+margin*2, width=side+margin*2)
+        self.bind("<Button-1>", self.canvas_click_listener)
+        self.bind("<Motion>", self.canvas_motion_listener)
+
 
         self.board = board
         self.players = players
@@ -56,7 +57,7 @@ class BoardCanvas(tkinter.Frame):
         self.move_stack = move_stack
 
     def draw_board(self):
-        self.canvas.create_rectangle(
+        self.create_rectangle(
             self.margin,
             self.margin,
             self.margin + self.side,
@@ -66,7 +67,7 @@ class BoardCanvas(tkinter.Frame):
         for v in range(self.board.size):
             for h in range(self.board.size):
                 x, y = self.idx_to_mass_pos(h, v)
-                self.canvas.create_rectangle(
+                self.create_rectangle(
                     x,
                     y,
                     x + self.mass_side,
@@ -77,7 +78,7 @@ class BoardCanvas(tkinter.Frame):
     def draw_piece(self, h, v, color, tag="piece"):
         mass_margin = (1. - self.piece_mass_width_rate) / 2. * self.mass_side
         x, y = self.idx_to_mass_pos(h, v)
-        self.canvas.create_oval(
+        self.create_oval(
             x + mass_margin,
             y + mass_margin,
             x + mass_margin + self.mass_side * self.piece_mass_width_rate,
@@ -93,7 +94,7 @@ class BoardCanvas(tkinter.Frame):
 
     def draw_vertical_wall(self, h, v, color, tag="wall"):
         x, y = self.idx_to_vertical_wall_pos(h, v)
-        self.canvas.create_rectangle(
+        self.create_rectangle(
             x,
             y,
             x + self.ditch_width,
@@ -104,7 +105,7 @@ class BoardCanvas(tkinter.Frame):
 
     def draw_horizontal_wall(self, h, v, color, tag="wall"):
         x, y = self.idx_to_horizontal_wall_pos(h, v)
-        self.canvas.create_rectangle(
+        self.create_rectangle(
             x,
             y,
             x + self.mass_side,
@@ -115,7 +116,7 @@ class BoardCanvas(tkinter.Frame):
 
     def draw_xpt_wall(self, h, v, color, tag="wall"):
         x, y = self.idx_to_cross_ponit_pos(h, v)
-        self.canvas.create_rectangle(
+        self.create_rectangle(
             x,
             y,
             x + self.ditch_width,
@@ -146,13 +147,13 @@ class BoardCanvas(tkinter.Frame):
         self.draw_walls()
 
     def clear(self):
-        self.canvas.delete("all")
+        self.delete("all")
 
     def clear_piece(self):
-        self.canvas.delete("piece")
+        self.delete("piece")
 
     def clear_wall(self):
-        self.canvas.delete("wall")
+        self.delete("wall")
 
     def idx_to_mass_pos(self, h, v):
         x = self.margin + (h + 1) * self.ditch_width + h * self.mass_side
@@ -217,7 +218,7 @@ class BoardCanvas(tkinter.Frame):
     def canvas_motion_listener(self, event):
         color = "black"
         tag = "candidate"
-        self.canvas.delete(tag)
+        self.delete(tag)
         move = self.pos_to_move(event.x, event.y)
         if move is not None:
             board = copy.deepcopy(self.board)

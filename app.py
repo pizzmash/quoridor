@@ -15,7 +15,7 @@ class App(tkinter.Frame):
         super().__init__(master)
         self.pack()
 
-        master.geometry("{}x{}".format(620, 620))
+        master.geometry("{}x{}".format(800, 620))
         master.title("title here")
 
         self.size = 9
@@ -31,6 +31,7 @@ class App(tkinter.Frame):
         # master.start()
 
         self.canvas = BoardCanvas(self, 600, 10, self.board, [p1, p2], self.move_stack)
+        self.canvas.pack()
 
         self.thread = threading.Thread(target=self.game)
         self.thread.setDaemon(True)
