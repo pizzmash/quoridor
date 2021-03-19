@@ -1,8 +1,10 @@
 import tkinter
+import h5py
 
 from human import Human
 from randombot import RandomBot
 from minimax import MiniMax
+from policy import load_policy_agent
 from boardcanvas import MoveStack
 from evaluation import DistanceEvaluation
 
@@ -44,13 +46,15 @@ class PlayerRadioButton(tkinter.Frame):
         r1 = tkinter.Radiobutton(self, value=0, variable=self.var, text="Human", command=self.update_eval_validation)
         r2 = tkinter.Radiobutton(self, value=1, variable=self.var, text="Random", command=self.update_eval_validation)
         r3 = tkinter.Radiobutton(self, value=2, variable=self.var, text="MiniMax", command=self.update_eval_validation)
+        r4 = tkinter.Radiobutton(self, value=3, variable=self.var, text="Policy", command=self.update_eval_validation)
         self.ef = EvalFrame(self)
 
         label.grid(row=0, column=0, columnspan=2)
         r1.grid(row=1, column=0, padx=5)
         r2.grid(row=2, column=0, padx=5)
         r3.grid(row=3, column=0, padx=5)
-        self.ef.grid(row=1, column=1, rowspan=3, padx=5)
+        r4.grid(row=4, column=0, padx=5)
+        self.ef.grid(row=1, column=1, rowspan=4, padx=5)
 
     def build(self):
         if self.var.get() == 0:
@@ -60,6 +64,8 @@ class PlayerRadioButton(tkinter.Frame):
         elif self.var.get() == 2:
             eval, depth = self.ef.build()
             return MiniMax(eval, depth)
+        elif self.var.get() == 3:
+            return load_policy_agent(h5py.File("policy.hdf5"))
 
     def update_eval_validation(self):
         if self.var.get() == 2:
