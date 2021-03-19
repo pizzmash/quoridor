@@ -79,7 +79,7 @@ def main():
     agent1.set_collector(collector1)
     agent2.set_collector(collector2)
 
-    num_games = 100
+    num_games = 5
 
     for i in tqdm(range(num_games)):
         collector1.begin_episode()
@@ -112,10 +112,10 @@ def main():
         # clipnorm=learning_agent.clip_probs,
         batch_size=16
     )
-    #with h5py.File(updated_agent_filename, 'w') as updated_agent_outf:
-    #    learning_agent.serialize(updated_agent_outf)
+    with h5py.File(updated_agent_filename, 'w') as updated_agent_outf:
+        learning_agent.serialize(updated_agent_outf)
     policy_fn = updated_agent_filename
-    compere_agent(100, board_size, wall, [learning_agent, agent1])
+    # compere_agent(100, board_size, wall, [learning_agent, agent1])
 
 
 if __name__ == main():
