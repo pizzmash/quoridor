@@ -65,57 +65,59 @@ def main():
 
     model = Model(inputs=[x.input, y.input, z.input], outputs=u)
 
-    policy_fn = None
+    policy_fn = "policy.hdf5"
     updated_agent_filename = "policy.hdf5"
 
-    if policy_fn is not None:
-        agent1 = load_policy_agent(h5py.File(policy_fn))
-        agent2 = load_policy_agent(h5py.File(policy_fn))
-    else:
-        agent1 = Policy(model, encoder)
-        agent2 = Policy(model, encoder)
     collector1 = ExperienceCollector()
     collector2 = ExperienceCollector()
-    agent1.set_collector(collector1)
-    agent2.set_collector(collector2)
 
-    num_games = 5
+    for piyo in range(10):
 
-    for i in tqdm(range(num_games)):
-        collector1.begin_episode()
-        collector2.begin_episode()
-
-        winner = simulate_game(board_size, wall, [agent1, agent2])
-        if winner == 0:
-            collector1.complete_episode(reward=1)
-            collector2.complete_episode(reward=-1)
+        if piyo > 0:
+            agent1 = load_policy_agent(h5py.File(policy_fn))
+            agent2 = load_policy_agent(h5py.File(policy_fn))
         else:
-            collector1.complete_episode(reward=-1)
-            collector2.complete_episode(reward=1)
+            agent1 = Policy(model, encoder)
+            agent2 = Policy(model, encoder)
+        agent1.set_collector(collector1)
+        agent2.set_collector(collector2)
 
-    exp_filename = "experience.hdf5"
+        num_games = 5
 
-    experience = combine_experience([collector1, collector2])
-    with h5py.File(exp_filename, 'w') as experience_outf:
-        experience.serialize(experience_outf)
+        for i in tqdm(range(num_games)):
+            collector1.begin_episode()
+            collector2.begin_episode()
 
-    learning_agent_filename = None
+            winner = simulate_game(board_size, wall, [agent1, agent2])
+            if winner == 0:
+                collector1.complete_episode(reward=1)
+                collector2.complete_episode(reward=-1)
+            else:
+                collector1.complete_episode(reward=-1)
+                collector2.complete_episode(reward=1)
 
-    if learning_agent_filename is not None:
-        learning_agent = load_policy_agent(h5py.File(learning_agent_filename))
-    else:
-        learning_agent = Policy(model, encoder)
-    exp_buffer = load_experience(h5py.File(exp_filename))
-    learning_agent.train(
-        exp_buffer,
-        lr=0.01,
-        # clipnorm=learning_agent.clip_probs,
-        batch_size=16
-    )
-    with h5py.File(updated_agent_filename, 'w') as updated_agent_outf:
-        learning_agent.serialize(updated_agent_outf)
-    policy_fn = updated_agent_filename
-    # compere_agent(100, board_size, wall, [learning_agent, agent1])
+        exp_filename = "experience.hdf5"
+
+        experience = combine_experience([collector1, collector2])
+        with h5py.File(exp_filename, 'w') as experience_outf:
+            experience.serialize(experience_outf)
+
+        learning_agent_filename = policy_fn
+
+        if i > 0:
+            learning_agent = load_policy_agent(h5py.File(learning_agent_filename))
+        else:
+            learning_agent = Policy(model, encoder)
+        exp_buffer = load_experience(h5py.File(exp_filename))
+        learning_agent.train(
+            exp_buffer,
+            lr=0.01,
+            # clipnorm=learning_agent.clip_probs,
+            batch_size=16
+        )
+        with h5py.File(updated_agent_filename, 'w') as updated_agent_outf:
+            learning_agent.serialize(updated_agent_outf)
+        compere_agent(10, board_size, wall, [learning_agent, agent1])
 
 
 if __name__ == main():
