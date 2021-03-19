@@ -44,8 +44,8 @@ def compere_agent(num_games, board_size, wall, players):
 
 
 def main():
-    board_size = 3
-    wall = 4
+    board_size = 5
+    wall = 6
 
     encoder = SimpleEncoder(board_size=board_size)
     input1 = Input(shape=encoder.shape()[0])
@@ -71,7 +71,7 @@ def main():
     collector1 = ExperienceCollector()
     collector2 = ExperienceCollector()
 
-    for piyo in range(10):
+    for piyo in range(100):
 
         if piyo > 0:
             agent1 = load_policy_agent(h5py.File(policy_fn))
@@ -104,7 +104,7 @@ def main():
 
         learning_agent_filename = policy_fn
 
-        if i > 0:
+        if piyo > 0:
             learning_agent = load_policy_agent(h5py.File(learning_agent_filename))
         else:
             learning_agent = Policy(model, encoder)
@@ -117,7 +117,8 @@ def main():
         )
         with h5py.File(updated_agent_filename, 'w') as updated_agent_outf:
             learning_agent.serialize(updated_agent_outf)
-        compere_agent(10, board_size, wall, [learning_agent, agent1])
+        if piyo > 0 and piyo % 10 == 0:
+            compere_agent(100, board_size, wall, [learning_agent, agent1])
 
 
 if __name__ == main():
