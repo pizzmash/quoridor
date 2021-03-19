@@ -1,15 +1,18 @@
 import numpy as np
+from keras.optimizers import SGD
 
 from player import Player
 from simpleencoder import SimpleEncoder
 from move import PieceMove, HorizontalWallMove, VerticalWallMove
 import kerasutil
+from experience import prepare_experience_data
 
 
 class Policy(Player):
     def __init__(self, model, encoder):
         self.model = model
         self.encoder = encoder
+        self.collector = None
 
     def clip_probs(self, probs):
         min_p = 1e-5
@@ -45,6 +48,22 @@ class Policy(Player):
 
     def set_collector(self, collector):
         self.collector = collector
+
+    def train(self, experience, lr, batch_size):
+        self.model.compile(
+            loss='categorical_crossentropy',
+            optimizer=SGD(lr=lr)
+        )
+        target_vectors = prepare_experience_data(
+            experience,
+            self.encoder.board_size
+        )
+        self.model.fit(
+            [experience.states, experience.walls1, experience.walls2],
+            target_vectors,
+            batch_size=batch_size,
+            epochs=1
+        )
 
     def serialize(self, h5file):
         h5file.create_group("encoder")

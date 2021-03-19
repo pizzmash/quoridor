@@ -26,6 +26,8 @@ class ExperienceCollector:
         self.actions = []
         self.rewards = []
         self.current_episode_states = []
+        self.current_episode_walls1 = []
+        self.current_episode_walls2 = []
         self.current_episode_actions = []
 
     def begin_episode(self):
@@ -83,3 +85,14 @@ def load_experience(h5file):
         actions=np.array(h5file['experience']['actions']),
         rewards=np.array(h5file['experience']['rewards'])
     )
+
+def prepare_experience_data(experience, board_size):
+    experience_size = experience.actions.shape[0]
+    target_vectors = np.zeros(
+        (experience_size, board_size * board_size + ((board_size - 1) ** 2) * 2)
+    )
+    for i in range(experience_size):
+        action = experience.actions[i]
+        reward = experience.rewards[i]
+        target_vectors[i][action] = reward
+    return target_vectors

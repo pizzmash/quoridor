@@ -1,14 +1,18 @@
 import numpy as np
 import copy
 import h5py
+from tqdm import tqdm
 from keras.layers import Input, Dense, Activation, concatenate
 from keras.models import Model
 
 from simpleencoder import SimpleEncoder
 from layers import layers
-from policy import Policy
-from experience import ExperienceBuffer, ExperienceCollector, combine_experience
+from policy import Policy, load_policy_agent
+from experience import ExperienceBuffer, ExperienceCollector, combine_experience, load_experience
 from board import Board
+from evaluation import DistanceEvaluation
+from minimax import MiniMax
+from randombot import RandomBot
 
 
 def simulate_game(board_size, wall, players):
@@ -21,9 +25,27 @@ def simulate_game(board_size, wall, players):
     return 0 if board.is_goaled()[0] else 1
 
 
+def compere_agent(num_games, board_size, wall, players):
+    wins = 0
+    losses = 0
+    for i in tqdm(range(num_games)):
+        if i % 2 == 0:
+            ps = players
+            order = 0
+        else:
+            ps = [players[1], players[0]]
+            order = 1
+        result = simulate_game(board_size, wall, ps)
+        if result == order:
+            wins += 1
+        else:
+            losses += 1
+    print('Agent 1 record: {}/{}'.format(wins, wins + losses))
+
+
 def main():
-    board_size = 7
-    wall = 8
+    board_size = 3
+    wall = 4
 
     encoder = SimpleEncoder(board_size=board_size)
     input1 = Input(shape=encoder.shape()[0])
@@ -43,17 +65,23 @@ def main():
 
     model = Model(inputs=[x.input, y.input, z.input], outputs=u)
 
-    agent1 = Policy(model, encoder)
-    agent2 = Policy(model, encoder)
+    policy_fn = None
+    updated_agent_filename = "policy.hdf5"
+
+    if policy_fn is not None:
+        agent1 = load_policy_agent(h5py.File(policy_fn))
+        agent2 = load_policy_agent(h5py.File(policy_fn))
+    else:
+        agent1 = Policy(model, encoder)
+        agent2 = Policy(model, encoder)
     collector1 = ExperienceCollector()
     collector2 = ExperienceCollector()
     agent1.set_collector(collector1)
     agent2.set_collector(collector2)
 
-    num_games = 2
+    num_games = 100
 
-    for i in range(num_games):
-        print("start")
+    for i in tqdm(range(num_games)):
         collector1.begin_episode()
         collector2.begin_episode()
 
@@ -65,10 +93,29 @@ def main():
             collector1.complete_episode(reward=-1)
             collector2.complete_episode(reward=1)
 
+    exp_filename = "experience.hdf5"
+
     experience = combine_experience([collector1, collector2])
-    with h5py.File("experience.hdf5", 'w') as experience_outf:
+    with h5py.File(exp_filename, 'w') as experience_outf:
         experience.serialize(experience_outf)
 
+    learning_agent_filename = None
+
+    if learning_agent_filename is not None:
+        learning_agent = load_policy_agent(h5py.File(learning_agent_filename))
+    else:
+        learning_agent = Policy(model, encoder)
+    exp_buffer = load_experience(h5py.File(exp_filename))
+    learning_agent.train(
+        exp_buffer,
+        lr=0.01,
+        # clipnorm=learning_agent.clip_probs,
+        batch_size=16
+    )
+    #with h5py.File(updated_agent_filename, 'w') as updated_agent_outf:
+    #    learning_agent.serialize(updated_agent_outf)
+    policy_fn = updated_agent_filename
+    compere_agent(100, board_size, wall, [learning_agent, agent1])
 
 
 if __name__ == main():
